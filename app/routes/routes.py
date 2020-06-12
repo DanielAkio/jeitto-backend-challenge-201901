@@ -1,6 +1,20 @@
 from flask import jsonify
-from ..views import users
+from ..views import users, helper
 from app import app
+
+
+@app.route('/')
+@helper.token_required
+def root(user):
+    return "Hello World"
+
+
+@app.route('/Auth', methods=['POST'])
+def auth():
+    try:
+        return helper.auth()
+    except Exception as e:
+        return e
 
 
 @app.route('/Users', methods=['GET'])

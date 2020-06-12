@@ -64,3 +64,10 @@ def delete(user):
         return user_schema.dump(user)
     except Exception:
         raise InternalServerError()
+
+
+def user_by_username(username):
+    try:
+        return Users.query.filter(Users.username == username).one()
+    except Exception:
+        return None
