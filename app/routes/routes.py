@@ -1,59 +1,53 @@
-from flask import jsonify
 from ..views import users, helper
+from flask import jsonify
 from app import app
-
-
-@app.route('/')
-@helper.token_required
-def root(user):
-    return "Hello World"
 
 
 @app.route('/Auth', methods=['POST'])
 def auth():
-    try:
-        return helper.auth()
-    except Exception as e:
-        return e
+    return helper.auth()
 
 
-@app.route('/Users', methods=['GET'])
+@app.route('/User', methods=['GET'])
+@helper.token_admin_required
 def users_find():
-    try:
-        return jsonify(users.find()), 200
-    except Exception as e:
-        return e
+    return jsonify(users.find()), 200
 
 
-@app.route('/Users/<int:id>', methods=['GET'])
+@app.route('/User/<int:id>', methods=['GET'])
+@helper.token_admin_required
 def user_find(id):
-    try:
-        return jsonify(users.find_by_id(id)), 200
-    except Exception as e:
-        return e
+    return jsonify(users.find_by_id(id)), 200
 
 
-@app.route('/Users', methods=['POST'])
+@app.route('/User', methods=['POST'])
 def user_create():
-    try:
-        return jsonify(users.create()), 201
-    except Exception as e:
-        return e
+    return jsonify(users.create()), 201
 
 
-@app.route('/Users/<id>', methods=['PUT'])
+@app.route('/User/<id>', methods=['PUT'])
+@helper.token_yourself_or_admin_required
 def user_update(id):
-    try:
-        user = users.find_by_id(id, False)
-        return jsonify(users.update(user)), 200
-    except Exception as e:
-        return e
+    user = users.find_by_id(id, False)
+    return jsonify(users.update(user)), 200
 
 
-@app.route('/Users/<id>', methods=['DELETE'])
+@app.route('/User/<id>', methods=['DELETE'])
+@helper.token_yourself_or_admin_required
 def user_delete(id):
-    try:
-        user = users.find_by_id(id, False)
-        return jsonify(users.delete(user)), 200
-    except Exception as e:
-        return e
+    user = users.find_by_id(id, False)
+    return jsonify(users.delete(user)), 200
+
+
+@app.route('/UserToAdmin/<id>', methods=['PUT'])
+@helper.token_admin_required
+def user_to_admin(id):
+    user = users.find_by_id(id, False)
+    return jsonify(users.to_admin(user)), 200
+
+
+@app.route('/UserToCommon/<id>', methods=['PUT'])
+@helper.token_admin_required
+def user_to_common(id):
+    user = users.find_by_id(id, False)
+    return jsonify(users.to_common(user)), 200

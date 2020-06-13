@@ -14,6 +14,13 @@ def find_by_id(id, json=True):
     raise NotFound('User not found')
 
 
+def find_by_username(username):
+    user = Users.query.filter(Users.username == username).one()
+    if user:
+        return user
+    return NotFound('User not found')
+
+
 def find(json=True):
     users = Users.query.all()
     if users:
@@ -66,8 +73,19 @@ def delete(user):
         raise InternalServerError()
 
 
-def user_by_username(username):
+def to_admin(user):
     try:
-        return Users.query.filter(Users.username == username).one()
+        user.admin = True
+        db.session.commit()
+        return user_schema.dump(user)
     except Exception:
-        return None
+        return InternalServerError()
+
+
+def to_common(user):
+    try:
+        user.admin = False
+        db.session.commit()
+        return user_schema.dump(user)
+    except Exception:
+        return InternalServerError()
