@@ -1,6 +1,6 @@
 from werkzeug.exceptions import Unauthorized, NotFound
 from werkzeug.security import check_password_hash
-from .users import find_by_username
+from .user import find_by_username
 from flask import request, jsonify
 from functools import wraps
 from app import app

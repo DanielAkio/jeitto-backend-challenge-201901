@@ -1,12 +1,12 @@
 from werkzeug.exceptions import NotFound, InternalServerError, BadRequest
-from ..models.users import Users, user_schema, users_schema
+from ..models.user import User, user_schema, users_schema
 from werkzeug.security import generate_password_hash
 from flask import request
 from app import db
 
 
 def find_by_id(id, json=True):
-    user = Users.query.get(id)
+    user = User.query.get(id)
     if user:
         if json:
             return user_schema.dump(user)
@@ -15,28 +15,36 @@ def find_by_id(id, json=True):
 
 
 def find_by_username(username):
-    user = Users.query.filter(Users.username == username).one()
+    user = User.query.filter(User.username == username).one()
     if user:
         return user
     return NotFound('User not found')
 
 
 def find(json=True):
-    users = Users.query.all()
+    users = User.query.all()
     if users:
         return users_schema.dump(users)
     raise NotFound('No users found')
 
 
-def create():
-    try:
-        username = request.json['username']
-        password = request.json['password']
-    except Exception:
-        raise BadRequest()
+def create(json=None):
+    if json:
+        username = json['username']
+        password = json['password']
+    else:
+        try:
+            username = request.json['username']
+            password = request.json['password']
+        except Exception:
+            raise BadRequest()
 
     password_hash = generate_password_hash(password)
-    user = Users(username, password_hash)
+
+    if json:
+        user = User(username, password_hash, True)
+    else:
+        user = User(username, password_hash)
 
     try:
         db.session.add(user)
