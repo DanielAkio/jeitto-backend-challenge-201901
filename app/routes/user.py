@@ -1,29 +1,6 @@
-from ..views import user, helper, database
+from ..views import user, helper
 from flask import jsonify
 from app import app
-
-
-@app.route('/DatabaseCreate', methods=['POST'])
-def create_all():
-    if database.is_empty() is False:
-        message = 'Before creating, tables must be dropped'
-        return jsonify(message=message), 400
-    database.create_all()
-    user.create({'username': 'admin', 'password': 'admin'})
-    message = 'All tables created successfully'
-    accesses = {'login': 'admin', 'password': 'admin'}
-    return jsonify(message=message, accesses=accesses), 201
-
-
-@app.route('/DatabaseDrop', methods=['DELETE'])
-@helper.token_admin_required
-def drop_all():
-    return database.drop_all(), 200
-
-
-@app.route('/Auth', methods=['POST'])
-def auth():
-    return helper.auth()
 
 
 @app.route('/User', methods=['GET'])
