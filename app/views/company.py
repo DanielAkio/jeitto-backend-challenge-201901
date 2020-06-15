@@ -27,7 +27,7 @@ def create(user):
     except Exception:
         raise BadRequest('Missing json attributes')
 
-    company = Company(company_id, user['id'])
+    company = Company(company_id, user.id)
 
     try:
         db.session.add(company)

@@ -1,7 +1,9 @@
 from werkzeug.exceptions import Unauthorized, NotFound
 from werkzeug.security import check_password_hash
 from .user import find_by_username, find_by_id
+from .company import find_by_company_id
 from flask import request, jsonify
+from ..models import company
 from functools import wraps
 from app import app
 import datetime
@@ -70,12 +72,45 @@ def token_yourself_or_admin_required(get_user=False):
             is_admin = data['admin'] is False
             is_yourself = int(data['id']) != int(kwargs.get('id'))
             if is_admin and is_yourself:
-                message = 'Only admin can update or delete other users'
+                message = 'Permission must be from the admin or yourself'
                 raise Unauthorized(message)
 
             if get_user:
                 user = find_by_id(data['id'], False)
                 return f(user, *args, **kwargs)
+            return f(*args, **kwargs)
+        return function
+    return decorator
+
+
+def token_owner_or_admin_required(get_company=False, json_response=True):
+    def decorator(f):
+        @wraps(f)
+        def function(*args, **kwargs):
+            token = request.headers.get('x-access-token')
+            if not token:
+                raise Unauthorized('Missing token key')
+
+            try:
+                data = jwt.decode(token, app.config['SECRET_KEY'])
+            except Exception:
+                raise Unauthorized('Token not valid or expired')
+
+            _company = find_by_company_id(kwargs.get('company_id'), False)
+            if not _company:
+                raise NotFound('Company not found')
+
+            is_admin = data['admin'] is False
+            is_owner = int(data['id']) != _company.user_id
+            if is_admin and is_owner:
+                message = 'Permission must be from the admin or owner'
+                raise Unauthorized(message)
+
+            if get_company:
+                if json_response:
+                    _company = company.company_schema.dump(_company)
+                    return f(_company, *args, **kwargs)
+                return f(_company, *args, **kwargs)
             return f(*args, **kwargs)
         return function
     return decorator

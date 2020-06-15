@@ -41,7 +41,7 @@ def create(json=None):
     password_hash = generate_password_hash(password)
 
     if json:
-        user = User(username, password_hash, True)
+        user = User(username, password_hash, admin=True)
     else:
         user = User(username, password_hash)
 
