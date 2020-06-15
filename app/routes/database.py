@@ -1,13 +1,14 @@
+from werkzeug.exceptions import BadRequest
 from ..views import user, helper, database
 from flask import jsonify
 from app import app
 
 
 @app.route('/DatabaseCreate', methods=['POST'])
-def create_all():
+def database_create_all():
     if database.is_empty() is False:
         message = 'Before creating, tables must be dropped'
-        return jsonify(message=message), 400
+        raise BadRequest(message)
     database.create_all()
     user.create({'username': 'admin', 'password': 'admin'})
     message = 'All tables created successfully'
@@ -16,6 +17,9 @@ def create_all():
 
 
 @app.route('/DatabaseDrop', methods=['DELETE'])
-@helper.token_admin_required
-def drop_all():
+@helper.token_admin_required()
+def database_drop_all():
+    if database.is_empty():
+        message = 'The database does not have tables'
+        raise BadRequest(message)
     return database.drop_all(), 200

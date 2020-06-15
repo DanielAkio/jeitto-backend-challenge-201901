@@ -10,4 +10,4 @@ ma = Marshmallow(app)
 
 
 from .models import user, company, product
-from .routes import database, helper, user
+from .routes import database, helper, user, company

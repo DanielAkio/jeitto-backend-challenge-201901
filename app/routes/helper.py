@@ -3,5 +3,5 @@ from app import app
 
 
 @app.route('/Auth', methods=['POST'])
-def auth():
+def helper_auth():
     return helper.auth()

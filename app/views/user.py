@@ -1,31 +1,30 @@
-from werkzeug.exceptions import NotFound, InternalServerError, BadRequest
+from werkzeug.exceptions import InternalServerError, BadRequest
 from ..models.user import User, user_schema, users_schema
 from werkzeug.security import generate_password_hash
 from flask import request
 from app import db
+import datetime
 
 
-def find_by_id(id, json=True):
+def find_by_id(id, json_response=True):
     user = User.query.get(id)
-    if user:
-        if json:
-            return user_schema.dump(user)
-        return user
-    raise NotFound('User not found')
+    if json_response:
+        return user_schema.dump(user)
+    return user
 
 
-def find_by_username(username):
-    user = User.query.filter(User.username == username).one()
-    if user:
-        return user
-    return NotFound('User not found')
+def find_by_username(username, json_response=True):
+    user = User.query.filter_by(username=username, removed=None).first()
+    if json_response:
+        return user_schema.dump(user)
+    return user
 
 
-def find(json=True):
+def find(json_response=True):
     users = User.query.all()
-    if users:
+    if json_response:
         return users_schema.dump(users)
-    raise NotFound('No users found')
+    return users
 
 
 def create(json=None):
@@ -37,7 +36,7 @@ def create(json=None):
             username = request.json['username']
             password = request.json['password']
         except Exception:
-            raise BadRequest()
+            raise BadRequest('Missing json attributes')
 
     password_hash = generate_password_hash(password)
 
@@ -59,7 +58,7 @@ def update(user):
         username = request.json['username']
         password = request.json['password']
     except Exception:
-        raise BadRequest()
+        raise BadRequest('Missing json attributes')
 
     password_hash = generate_password_hash(password)
 
@@ -72,9 +71,18 @@ def update(user):
         raise InternalServerError()
 
 
-def delete(user):
+def logical_delete(user):
     try:
-        db.session.delete(user)
+        user.removed = datetime.datetime.utcnow()
+        db.session.commit()
+        return user_schema.dump(user)
+    except Exception:
+        raise InternalServerError()
+
+
+def logical_restore(user):
+    try:
+        user.removed = None
         db.session.commit()
         return user_schema.dump(user)
     except Exception:

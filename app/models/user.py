@@ -1,4 +1,5 @@
 from app import db, ma
+import datetime
 
 
 class User(db.Model):
@@ -6,6 +7,10 @@ class User(db.Model):
     username = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(100), nullable=False)
     admin = db.Column(db.Boolean, server_default='0')
+    created = db.Column(
+        db.DateTime, nullable=False, default=datetime.datetime.utcnow())
+    updated = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow())
+    removed = db.Column(db.DateTime)
 
     companies = db.relationship('Company', backref='user', lazy=True)
 
@@ -17,7 +22,15 @@ class User(db.Model):
 
 class UserSchema(ma.Schema):
     class Meta:
-        fields = ('id', 'username', 'password', 'admin')
+        fields = (
+            'id',
+            'username',
+            'password',
+            'admin',
+            'created',
+            'updated',
+            'removed'
+        )
 
 
 user_schema = UserSchema()
