@@ -4,6 +4,11 @@ from flask import jsonify
 from app import app
 
 
+@app.route('/', methods=['GET'])
+def hello():
+    return "Hello World"
+
+
 @app.route('/Company', methods=['GET'])
 @VHelper.token_admin_required()
 def company_find_all():
