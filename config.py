@@ -1,13 +1,7 @@
-DEBUG = True
-MYSQL_DB = 'booh3ea84eak40eq7jcp'
-MYSQL_HOST = 'booh3ea84eak40eq7jcp-mysql.services.clever-cloud.com'
-MYSQL_PASSWORD = 'DkvdhNuKodIuGtFRxAuX'
-MYSQL_PORT = '3306'
-MYSQL_USER = 'utbhj4gmmyroc07r'
-MYSQL_URI = (
-    'mysql://'
-    f'{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DB}'
-)
+import os
+
+
+MYSQL_URI = os.environ['MYSQL_URI']
 SQLALCHEMY_DATABASE_URI = MYSQL_URI
 SQLALCHEMY_TRACK_MODIFICATIONS = False
-SECRET_KEY = MYSQL_PASSWORD
+SECRET_KEY = os.environ['SECRET_KEY']
