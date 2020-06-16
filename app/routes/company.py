@@ -1,7 +1,15 @@
 from werkzeug.exceptions import Unauthorized, NotFound
 from ..views import helper as VHelper, company as VCompany
-from flask import jsonify
+from flask import jsonify, render_template
+from markdown2 import Markdown
 from app import app
+
+
+@app.route('/', methods=['GET'])
+def root():
+    markdowner = Markdown()
+    content = markdowner.convert(open('README.md').read(9999))
+    return render_template('template.html', content=content)
 
 
 @app.route('/Company', methods=['GET'])
