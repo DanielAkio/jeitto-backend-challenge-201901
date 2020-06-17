@@ -1,1 +1,1 @@
-web: gunicorn --bind 0.0.0.0:5000 flaskapp:app
+web: python3 run.py
