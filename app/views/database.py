@@ -1,5 +1,4 @@
 from werkzeug.exceptions import InternalServerError
-from flask import jsonify
 from app import db
 
 
@@ -13,14 +12,13 @@ def create_all():
     try:
         db.create_all()
         pass
-    except Exception:
-        raise InternalServerError()
+    except Exception as e:
+        raise InternalServerError(str(e))
 
 
 def drop_all():
     try:
         db.drop_all()
-        message = 'All tables dropped successfully'
-        return jsonify(message=message)
-    except Exception:
-        raise InternalServerError()
+        pass
+    except Exception as e:
+        raise InternalServerError(str(e))

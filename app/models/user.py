@@ -1,3 +1,4 @@
+from werkzeug.security import generate_password_hash
 from app import db, ma
 import datetime
 
@@ -16,7 +17,7 @@ class User(db.Model):
 
     def __init__(self, username, password, admin=False):
         self.username = username
-        self.password = password
+        self.password = generate_password_hash(password)
         self.admin = admin
 
 
@@ -25,7 +26,6 @@ class UserSchema(ma.Schema):
         fields = (
             'id',
             'username',
-            'password',
             'admin',
             'created',
             'updated',

@@ -9,5 +9,7 @@ db = SQLAlchemy(app)
 ma = Marshmallow(app)
 
 
-from .models import user, company, product
-from .routes import database, helper, user, company
+from .models import user, company, product, log
+from .routes import (
+    database, helper, user, company, product
+)

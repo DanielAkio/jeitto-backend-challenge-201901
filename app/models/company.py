@@ -20,7 +20,7 @@ class Company(db.Model):
 
 class CompanySchema(ma.Schema):
     class Meta:
-        fields = ('company_id', 'user_id')
+        fields = ('company_id', 'user_id', 'created', 'updated', 'removed')
 
 
 company_schema = CompanySchema()
