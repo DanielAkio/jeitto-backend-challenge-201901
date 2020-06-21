@@ -5,7 +5,7 @@ import datetime
 class Product(db.Model):
     id = db.Column(db.String(100), primary_key=True, nullable=False)
     company_id = db.Column(
-        db.String(100), db.ForeignKey('company.company_id'), nullable=False
+        db.String(100), db.ForeignKey('company.id'), nullable=False
     )
     value = db.Column(db.Float, nullable=False)
     created = db.Column(

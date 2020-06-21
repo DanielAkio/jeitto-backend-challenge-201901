@@ -49,19 +49,22 @@ def create(user: m_User):
 
 
 def update(user: m_User):
-    password = request.json['password']
-    password_hash = generate_password_hash(password)
-
     try:
-        user.username = request.json['username']
-        user.password = password_hash
+        if 'password' in request.json:
+            password = request.json['password']
+            password_hash = generate_password_hash(password)
+            user.password = password_hash
+        if 'username' in request.json:
+            user.username = request.json['username']
         db.session.commit()
         return m_user_schema.dump(user)
+    except IntegrityError as e:
+        raise Conflict(e.orig.args[1])
     except SQLAlchemyError as e:
         raise InternalServerError(e.orig.args[1])
 
 
-def logical_delete(user):
+def logical_delete(user: m_User):
     try:
         user.removed = datetime.datetime.utcnow()
         db.session.commit()
@@ -70,7 +73,7 @@ def logical_delete(user):
         raise InternalServerError(e.orig.args[1])
 
 
-def logical_restore(user):
+def logical_restore(user: m_User):
     try:
         user.removed = None
         db.session.commit()
@@ -79,9 +82,9 @@ def logical_restore(user):
         raise InternalServerError(e.orig.args[1])
 
 
-def to_admin(user):
+def access(user: m_User):
     try:
-        user.admin = True
+        user.access = request.json['access']
         db.session.commit()
         return m_user_schema.dump(user)
     except SQLAlchemyError as e:
@@ -90,7 +93,7 @@ def to_admin(user):
 
 def to_common(user):
     try:
-        user.admin = False
+        user.access = 'False'
         db.session.commit()
         return m_user_schema.dump(user)
     except SQLAlchemyError as e:

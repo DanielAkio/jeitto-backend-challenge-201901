@@ -11,25 +11,19 @@ from app import db
 import datetime
 
 
-def find_by_company_id(company_id, json=True):
-    company = m_Company.query.filter_by(company_id=company_id).first()
-    if company:
-        if json:
-            return m_company_schema.dump(company)
-        return company
-    raise NotFound('Company not found')
-
-
-def find(json=True):
+def find():
     company = m_Company.query.all()
-    if company:
-        return m_companies_schema.dump(company)
-    raise NotFound('No companies found')
+    return m_companies_schema.dump(company)
 
 
-def create(user: m_User):
-    company = m_Company(request.json['company_id'], user.id)
+def find_by_company_id(id, json_response=True):
+    company = m_Company.query.get(id)
+    if json_response:
+        return m_company_schema.dump(company)
+    return company
 
+
+def create(company: m_Company):
     try:
         db.session.add(company)
         db.session.commit()
@@ -42,8 +36,10 @@ def create(user: m_User):
 
 def update(company: m_Company):
     try:
-        company.company_id = request.json['company_id']
-        company.user_id = request.json['user_id']
+        if 'id' in request.json:
+            company.id = request.json['id']
+        if 'user_id' in request.json:
+            company.user_id = request.json['user_id']
         db.session.commit()
         return m_company_schema.dump(company)
     except IntegrityError as e:

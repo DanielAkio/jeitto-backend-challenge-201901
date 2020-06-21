@@ -1,10 +1,10 @@
+from werkzeug.exceptions import NotFound, Unauthorized
 from ..models import product as m_product
-from werkzeug.exceptions import NotFound
 from flask import request, jsonify
 from ..views import (
-    helper as v_helper,
     product as v_product,
-    user as v_user
+    company as v_company,
+    helper as v_helper
 )
 from app import app
 
@@ -18,29 +18,69 @@ def product_find(user):
     return jsonify(products), 200
 
 
-@app.route('/CompanyProducts/<string:company_id>', methods=['POST'])
+@app.route('/CompanyProducts/<string:id>', methods=['POST'])
 @v_helper.request_json_must_have(arguments=['id', 'value'])
-@v_helper.token_owner_or_admin_required(get_company=True, json_response=False)
-def product_create(company):
+@v_helper.token_owner_or_admin_required(get_user=True, json_response=True)
+def product_create(user, id):
+    company = v_company.find_by_company_id(id, json_response=False)
+    if not company:
+        return NotFound('Company not found')
+    elif company.user_id != user['id'] and user['access'] != 'admin':
+        message = 'Only the owner of the company or admin can create a product'
+        return Unauthorized(message)
     product = m_product.Product(
-        request.json['id'], company.company_id, request.json['value']
+        request.json['id'], company.id, request.json['value']
     )
     return v_product.create(product), 201
 
 
-@app.route('/CompanyProducts/<id>', methods=['PUT'])
-@v_helper.token_required()
-def company_edit_product():
-    pass
+@app.route('/CompanyProducts/<string:id>', methods=['PUT'])
+@v_helper.request_json_must_have_one(arguments=['id', 'value'])
+@v_helper.token_owner_or_admin_required(get_user=True, json_response=True)
+def product_update(user, id):
+    product = v_product.find_by_id(id, json_response=False)
+    if not product:
+        return NotFound('Product not found')
+    company = v_company.find_by_company_id(
+        product.company_id, json_response=False
+    )
+    if not company:
+        return NotFound('Company not found')
+    elif company.user_id != user['id'] and user['access'] != 'admin':
+        message = 'Only the owner of the company or admin can update a product'
+        return Unauthorized(message)
+    return jsonify(v_product.update(product)), 200
 
 
-@app.route('/CompanyProducts/<id>', methods=['DELETE'])
-@v_helper.token_required()
-def company_delete_product():
-    pass
+@app.route('/CompanyProducts/<string:id>', methods=['DELETE'])
+@v_helper.token_owner_or_admin_required(get_user=True, json_response=True)
+def product_logical_delete(user, id):
+    product = v_product.find_by_id(id, json_response=False)
+    if not product:
+        return NotFound('Product not found')
+    company = v_company.find_by_company_id(
+        product.company_id, json_response=False
+    )
+    if not company:
+        return NotFound('Company not found')
+    elif company.user_id != user['id'] and user['access'] != 'admin':
+        message = 'Only the owner of the company or admin can update a product'
+        return Unauthorized(message)
+    return jsonify(v_product.logical_delete(product)), 200
 
 
-@app.route('/CompanyProducts', methods=['GET'])
-@v_helper.token_required()
-def company_list_products():
-    pass
+@app.route('/CompanyProductsRestore/<string:id>', methods=['PUT'])
+@v_helper.token_owner_or_admin_required(get_user=True, json_response=True)
+def product_logical_restore(user, id):
+    product = v_product.find_by_id(id, json_response=False)
+    if not product:
+        return NotFound('Product not found')
+    company = v_company.find_by_company_id(
+        product.company_id, json_response=False
+    )
+    if not company:
+        return NotFound('Company not found')
+    elif company.user_id != user['id'] and user['access'] != 'admin':
+        message = 'Only the owner of the company or admin can update a product'
+        return Unauthorized(message)
+    return jsonify(v_product.logical_restore(product)), 200

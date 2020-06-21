@@ -1,5 +1,5 @@
+from werkzeug.exceptions import NotFound, UnprocessableEntity
 from ..views import user as v_user, helper as v_helper
-from werkzeug.exceptions import NotFound
 from ..models import user as m_user
 from flask import jsonify, request
 from app import app
@@ -7,7 +7,7 @@ from app import app
 
 @app.route('/User', methods=['GET'])
 @v_helper.token_admin_required()
-def user_find_all():
+def user_find():
     users = v_user.find()
     if not users:
         return NotFound('No users found')
@@ -16,11 +16,11 @@ def user_find_all():
 
 @app.route('/User/<id>', methods=['GET'])
 @v_helper.token_yourself_or_admin_required()
-def user_find(id):
-    _user = v_user.find_by_id(id)
-    if not _user:
+def user_find_by_id(id):
+    user = v_user.find_by_id(id)
+    if not user:
         return NotFound('User not found')
-    return jsonify(_user), 200
+    return jsonify(user), 200
 
 
 @app.route('/User', methods=['POST'])
@@ -31,7 +31,7 @@ def user_create():
 
 
 @app.route('/User/<id>', methods=['PUT'])
-@v_helper.request_json_must_have(arguments=['username', 'password'])
+@v_helper.request_json_must_have_one(arguments=['username', 'password'])
 @v_helper.token_yourself_or_admin_required()
 def user_update(id):
     user = v_user.find_by_id(id, json_response=False)
@@ -43,34 +43,29 @@ def user_update(id):
 @app.route('/User/<id>', methods=['DELETE'])
 @v_helper.token_yourself_or_admin_required()
 def user_logical_delete(id):
-    _user = v_user.find_by_id(id, json_response=False)
-    if not _user:
+    user = v_user.find_by_id(id, json_response=False)
+    if not user:
         return NotFound('User not found')
-    return jsonify(v_user.logical_delete(_user)), 200
+    return jsonify(v_user.logical_delete(user)), 200
 
 
 @app.route('/UserRestore/<id>', methods=['PUT'])
 @v_helper.token_yourself_or_admin_required()
 def user_logical_restore(id):
-    _user = v_user.find_by_id(id, json_response=False)
-    if not _user:
+    user = v_user.find_by_id(id, json_response=False)
+    if not user:
         return NotFound('User not found')
-    return jsonify(v_user.logical_restore(_user)), 200
+    return jsonify(v_user.logical_restore(user)), 200
 
 
-@app.route('/UserToAdmin/<id>', methods=['PUT'])
+@app.route('/UserAccess/<id>', methods=['PUT'])
+@v_helper.request_json_must_have(arguments=['access'])
 @v_helper.token_admin_required()
-def user_to_admin(id):
-    _user = v_user.find_by_id(id, json_response=False)
-    if not _user:
+def user_access(id):
+    if request.json['access'] not in ['admin', 'owner', 'common']:
+        message = 'Access must be: admin, owner or common'
+        raise UnprocessableEntity(message)
+    user = v_user.find_by_id(id, json_response=False)
+    if not user:
         return NotFound('User not found')
-    return jsonify(v_user.to_admin(_user)), 200
-
-
-@app.route('/UserToCommon/<id>', methods=['PUT'])
-@v_helper.token_admin_required()
-def user_to_common(id):
-    _user = v_user.find_by_id(id, json_response=False)
-    if not _user:
-        return NotFound('User not found')
-    return jsonify(v_user.to_common(_user)), 200
+    return jsonify(v_user.access(user)), 200

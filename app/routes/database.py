@@ -11,7 +11,7 @@ def database_create_all():
         message = 'Before creating, tables must be dropped'
         raise BadRequest(message)
     v_database.create_all()
-    v_user.create(m_user.User('admin', 'admin', True))
+    v_user.create(m_user.User('admin', 'admin', 'admin'))
     message = 'All tables created successfully'
     accesses = {'login': 'admin', 'password': 'admin'}
     return jsonify(message=message, accesses=accesses), 201

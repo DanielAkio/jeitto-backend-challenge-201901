@@ -1,4 +1,4 @@
-from werkzeug.exceptions import Conflict, InternalServerError, Unauthorized
+from werkzeug.exceptions import Conflict, InternalServerError
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from ..models.product import (
     products_schema as m_products_schema,
@@ -13,39 +13,39 @@ from ..models.company import (
 from ..models.user import User as m_User
 from flask import request
 from app import db
+import datetime
 
 
 def find(user: m_User):
-    company_id = request.args.get('company_id')
-    if company_id:
-        company = m_Company.query.filter_by(
-            company_id=company_id
-        ).first()
+    id = request.args.get('company_id')
+    if id:
+        company = m_Company.query.filter_by(id=id).first()
         if company is None:
             return None
-        if not user['admin'] and company.user_id != user['id']:
-            message = 'User only can see your companies products'
-            raise Unauthorized(message)
         company_dump = m_company_schema.dump(company)
         products = m_Product.query.filter_by(
-            company_id=company_dump['company_id']
+            company_id=company_dump['id']
         ).all()
         company_dump['products'] = m_products_schema.dump(products)
         return company_dump
     else:
-        if user['admin']:
-            companies = m_Company.query.all()
-        else:
-            companies = m_Company.query.filter_by(user_id=user['id']).all()
+        companies = m_Company.query.all()
         if companies is None:
             return None
         companies_dump = m_companies_schema.dump(companies)
         for company in companies_dump:
             products = m_Product.query.filter_by(
-                company_id=company['company_id']
+                company_id=company['id']
             ).all()
             company['products'] = m_products_schema.dump(products)
         return companies_dump
+
+
+def find_by_id(id: str, json_response=True):
+    product = m_Product.query.get(id)
+    if json_response:
+        return m_product_schema.dump(product)
+    return product
 
 
 def create(product: m_Product):
@@ -55,5 +55,37 @@ def create(product: m_Product):
         return m_product_schema.dump(product)
     except IntegrityError as e:
         raise Conflict(e.orig.args[1])
+    except SQLAlchemyError as e:
+        raise InternalServerError(e.orig.args[1])
+
+
+def update(product: m_Product):
+    try:
+        if 'id' in request.json:
+            product.id = request.json['id']
+        if 'value' in request.json:
+            product.value = request.json['value']
+        db.session.commit()
+        return m_product_schema.dump(product)
+    except IntegrityError as e:
+        raise Conflict(e.orig.args[1])
+    except SQLAlchemyError as e:
+        raise InternalServerError(e.orig.args[1])
+
+
+def logical_delete(product: m_Product):
+    try:
+        product.removed = datetime.datetime.utcnow()
+        db.session.commit()
+        return m_product_schema.dump(product)
+    except SQLAlchemyError as e:
+        raise InternalServerError(e.orig.args[1])
+
+
+def logical_restore(product: m_Product):
+    try:
+        product.removed = None
+        db.session.commit()
+        return m_product_schema.dump(product)
     except SQLAlchemyError as e:
         raise InternalServerError(e.orig.args[1])
