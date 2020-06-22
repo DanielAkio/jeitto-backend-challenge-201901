@@ -12,6 +12,7 @@ class Company(db.Model):
     removed = db.Column(db.DateTime)
 
     products = db.relationship('Product', backref='company', lazy=True)
+    logs = db.relationship('Log', backref='company', lazy=True)
 
     def __init__(self, id, user_id):
         self.id = id

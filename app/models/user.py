@@ -14,6 +14,7 @@ class User(db.Model):
     removed = db.Column(db.DateTime)
 
     companies = db.relationship('Company', backref='user', lazy=True)
+    users = db.relationship('Log', backref='user', lazy=True)
 
     def __init__(
         self,
