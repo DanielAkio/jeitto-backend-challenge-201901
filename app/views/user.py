@@ -11,13 +11,6 @@ from app import db
 import datetime
 
 
-def is_admin(id: int):
-    user = find_by_id(id)
-    if user is None:
-        raise NotFound('User not found')
-    return user['admin']
-
-
 def find():
     users = m_User.query.all()
     return m_users_schema.dump(users)
