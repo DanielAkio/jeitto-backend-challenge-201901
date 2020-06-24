@@ -10,7 +10,7 @@ Para visualizar a documentação dos métodos da API <a href="https://documenter
 
 <a id="estrutura"></a>
 # Estrutura
-```python
+```
 jeitto
 ├── app
 │   ├── __init__.py
