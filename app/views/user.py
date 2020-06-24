@@ -1,4 +1,4 @@
-from werkzeug.exceptions import InternalServerError, Conflict, NotFound
+from werkzeug.exceptions import InternalServerError, Conflict
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from werkzeug.security import generate_password_hash
 from ..models.user import (
