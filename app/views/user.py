@@ -16,14 +16,14 @@ def find():
     return m_users_schema.dump(users)
 
 
-def find_by_id(id, json_response=True):
+def find_by_id(id: int, json_response=True):
     user = m_User.query.get(id)
     if json_response:
         return m_user_schema.dump(user)
     return user
 
 
-def find_by_username(username, json_response=True):
+def find_by_username(username: str, json_response=True):
     user = m_User.query.filter_by(username=username).first()
     if json_response:
         return m_user_schema.dump(user)
@@ -78,15 +78,6 @@ def logical_restore(user: m_User):
 def access(user: m_User):
     try:
         user.access = request.json['access']
-        db.session.commit()
-        return m_user_schema.dump(user)
-    except SQLAlchemyError as e:
-        raise InternalServerError(e.orig.args[1])
-
-
-def to_common(user):
-    try:
-        user.access = 'False'
         db.session.commit()
         return m_user_schema.dump(user)
     except SQLAlchemyError as e:
