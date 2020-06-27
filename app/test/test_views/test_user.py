@@ -34,7 +34,7 @@ aleatory_errors = [
 ]
 
 user_validate = Schema({
-    'id': Or(str, None),
+    'id': Or(int, None),
     'updated': Or(str, None),
     'created': Or(str, None),
     'access': Or(str, None),
@@ -43,7 +43,7 @@ user_validate = Schema({
 })
 
 user_list_validate = Schema([{
-    'id': Or(str, None),
+    'id': Or(int, None),
     'updated': Or(str, None),
     'created': Or(str, None),
     'access': Or(str, None),

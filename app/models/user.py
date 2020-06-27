@@ -16,12 +16,7 @@ class User(db.Model):
     companies = db.relationship('Company', backref='user', lazy=True)
     users = db.relationship('Log', backref='user', lazy=True)
 
-    def __init__(
-        self,
-        username,
-        password,
-        access=None
-    ):
+    def __init__(self, username: str, password: str, access=None):
         self.access = access
         self.username = username
         self.password = generate_password_hash(password)

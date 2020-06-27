@@ -1,6 +1,5 @@
-from werkzeug.exceptions import NotFound, InternalServerError, Conflict
+from werkzeug.exceptions import InternalServerError, Conflict
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
-from ..models.user import User as m_User
 from ..models.company import (
     companies_schema as m_companies_schema,
     company_schema as m_company_schema,
