@@ -18,7 +18,14 @@ class Log(db.Model):
         db.DateTime, nullable=False, default=datetime.datetime.utcnow()
     )
 
-    def __init__(self, user_id, product_id, company_id, phone_number, value):
+    def __init__(
+        self,
+        user_id: int,
+        product_id: str,
+        company_id: str,
+        phone_number: int,
+        value: float
+    ):
         self.id = str(uuid.uuid1())
         self.user_id = user_id
         self.company_id = company_id
