@@ -7,7 +7,7 @@ from app import app
 
 @app.route('/DatabaseCreate', methods=['POST'])
 def database_create_all():
-    if v_database.is_empty() is False:
+    if not v_database.is_empty():
         message = 'Before creating, tables must be dropped'
         raise BadRequest(message)
     v_database.create_all()
