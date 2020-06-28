@@ -21,7 +21,7 @@ def product_find(user):
 @app.route('/CompanyProducts/<string:id>', methods=['POST'])
 @v_helper.request_json_must_have(arguments=['id', 'value'])
 @v_helper.token_owner_or_admin_required(get_user=True, json_response=True)
-def product_create(user, id):
+def product_create(user, id: str):
     company = v_company.find_by_company_id(id, json_response=False)
     if not company:
         return NotFound('Company not found')
@@ -37,7 +37,7 @@ def product_create(user, id):
 @app.route('/CompanyProducts/<string:id>', methods=['PUT'])
 @v_helper.request_json_must_have_one(arguments=['id', 'value'])
 @v_helper.token_owner_or_admin_required(get_user=True, json_response=True)
-def product_update(user, id):
+def product_update(user, id: str):
     product = v_product.find_by_id(id, json_response=False)
     if not product:
         return NotFound('Product not found')
@@ -54,7 +54,7 @@ def product_update(user, id):
 
 @app.route('/CompanyProducts/<string:id>', methods=['DELETE'])
 @v_helper.token_owner_or_admin_required(get_user=True, json_response=True)
-def product_logical_delete(user, id):
+def product_logical_delete(user, id: str):
     product = v_product.find_by_id(id, json_response=False)
     if not product:
         return NotFound('Product not found')
@@ -71,7 +71,7 @@ def product_logical_delete(user, id):
 
 @app.route('/CompanyProductsRestore/<string:id>', methods=['PUT'])
 @v_helper.token_owner_or_admin_required(get_user=True, json_response=True)
-def product_logical_restore(user, id):
+def product_logical_restore(user, id: str):
     product = v_product.find_by_id(id, json_response=False)
     if not product:
         return NotFound('Product not found')

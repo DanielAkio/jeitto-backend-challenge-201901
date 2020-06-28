@@ -14,7 +14,7 @@ class Product(db.Model):
     updated = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow())
     removed = db.Column(db.DateTime)
 
-    def __init__(self, id, company_id, value):
+    def __init__(self, id: str, company_id: str, value: float):
         self.id = id
         self.company_id = company_id
         self.value = value
