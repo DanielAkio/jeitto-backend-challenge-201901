@@ -16,7 +16,7 @@ def company_find():
 
 @app.route('/Company/<string:id>', methods=['GET'])
 @v_helper.token_owner_or_admin_required(get_user=True)
-def company_find_by_id(user, id):
+def company_find_by_id(user, id: str):
     company = v_company.find_by_company_id(id)
     if not company:
         return NotFound('Company not found')
@@ -37,7 +37,7 @@ def company_create(user):
 @app.route('/Company/<string:id>', methods=['PUT'])
 @v_helper.request_json_must_have_one(arguments=['id', 'user_id'])
 @v_helper.token_owner_or_admin_required(get_user=True)
-def company_update(user, id):
+def company_update(user, id: str):
     company = v_company.find_by_company_id(id, json_response=False)
     if not company:
         return NotFound('Company not found')
@@ -49,7 +49,7 @@ def company_update(user, id):
 
 @app.route('/Company/<string:id>', methods=['DELETE'])
 @v_helper.token_owner_or_admin_required(get_user=True)
-def company_logical_delete(user, id):
+def company_logical_delete(user, id: str):
     company = v_company.find_by_company_id(id, json_response=False)
     if not company:
         return NotFound('Company not found')
@@ -61,7 +61,7 @@ def company_logical_delete(user, id):
 
 @app.route('/CompanyRestore/<string:id>', methods=['PUT'])
 @v_helper.token_owner_or_admin_required(get_user=True)
-def company_logical_restore(user, id):
+def company_logical_restore(user, id: str):
     company = v_company.find_by_company_id(id, json_response=False)
     if not company:
         return NotFound('Company not found')

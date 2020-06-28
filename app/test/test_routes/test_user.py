@@ -83,12 +83,12 @@ class TestUserCreate(unittest.TestCase):
         'app.views.helper._request_json_must_have',
         return_value=None
     )
-    def test_success(self, mock_token, mock_request, mock_create):
+    def test_success(self, mock_must_have, mock_request, mock_create):
         mock_request.json = {'username': 'username', 'password': 'password'}
         with app.test_client() as c:
             response = c.post('/User')
             self.assertEqual(response.status_code, 201)
-        assert mock_token.called
+        assert mock_must_have.called
         assert mock_create.called
         assert isinstance(response.data, bytes)
 
@@ -271,7 +271,7 @@ class TestUserAccess(unittest.TestCase):
         'app.views.helper._request_json_must_have',
         return_value=None
     )
-    def test_wrong_access(
+    def test_none_find_by_id(
         self,
         mock_must_have,
         mock_token,
