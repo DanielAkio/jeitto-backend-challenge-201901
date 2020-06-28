@@ -16,7 +16,7 @@ def user_find():
 
 @app.route('/User/<id>', methods=['GET'])
 @v_helper.token_yourself_or_admin_required()
-def user_find_by_id(id):
+def user_find_by_id(id: int):
     user = v_user.find_by_id(id)
     if not user:
         return NotFound('User not found')
@@ -33,7 +33,7 @@ def user_create():
 @app.route('/User/<id>', methods=['PUT'])
 @v_helper.request_json_must_have_one(arguments=['username', 'password'])
 @v_helper.token_yourself_or_admin_required()
-def user_update(id):
+def user_update(id: int):
     user = v_user.find_by_id(id, json_response=False)
     if not user:
         return NotFound('User not found')
@@ -42,7 +42,7 @@ def user_update(id):
 
 @app.route('/User/<id>', methods=['DELETE'])
 @v_helper.token_yourself_or_admin_required()
-def user_logical_delete(id):
+def user_logical_delete(id: int):
     user = v_user.find_by_id(id, json_response=False)
     if not user:
         return NotFound('User not found')
@@ -51,7 +51,7 @@ def user_logical_delete(id):
 
 @app.route('/UserRestore/<id>', methods=['PUT'])
 @v_helper.token_yourself_or_admin_required()
-def user_logical_restore(id):
+def user_logical_restore(id: int):
     user = v_user.find_by_id(id, json_response=False)
     if not user:
         return NotFound('User not found')
@@ -61,7 +61,7 @@ def user_logical_restore(id):
 @app.route('/UserAccess/<id>', methods=['PUT'])
 @v_helper.request_json_must_have(arguments=['access'])
 @v_helper.token_admin_required()
-def user_access(id):
+def user_access(id: int):
     if request.json['access'] not in ['admin', 'owner', 'common']:
         message = 'Access must be: admin, owner or common'
         raise UnprocessableEntity(message)

@@ -3,10 +3,10 @@ from unittest.mock import patch
 from app import app
 import unittest
 
-user = User('admin', 'admin', 'admin')
-
 
 class TestDatabaseCreateAll(unittest.TestCase):
+
+    user = User('admin', 'admin', 'admin')
 
     @patch('app.routes.database.v_user.create', return_value=None)
     @patch('app.routes.database.m_user.User', return_value=user)
@@ -32,12 +32,12 @@ class TestDatabaseCreateAll(unittest.TestCase):
 
 class TestDatabaseDropAll(unittest.TestCase):
 
+    @patch('app.routes.database.v_database')
     @patch(
-        'app.routes.database.v_helper._token_admin_required',
+        'app.views.helper._token_admin_required',
         return_value=None
     )
-    @patch('app.routes.database.v_database')
-    def test_success(self, mock_database, mock_token):
+    def test_success(self, mock_token, mock_database):
         mock_database.is_empty.return_value = False
         mock_database.drop_all.return_value = None
         with app.test_client() as c:
@@ -47,12 +47,12 @@ class TestDatabaseDropAll(unittest.TestCase):
         assert mock_database.is_empty.called
         assert mock_database.drop_all.called
 
+    @patch('app.routes.database.v_database.is_empty', return_value=True)
     @patch(
-        'app.routes.database.v_helper._token_admin_required',
+        'app.views.helper._token_admin_required',
         return_value=None
     )
-    @patch('app.routes.database.v_database.is_empty', return_value=True)
-    def test_false_is_empty(self, mock_is_empty, mock_token):
+    def test_false_is_empty(self, mock_token, mock_is_empty):
         with app.test_client() as c:
             response = c.delete('/DatabaseDrop')
             self.assertEqual(response.status_code, 400)
