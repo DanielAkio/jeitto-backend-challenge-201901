@@ -4,6 +4,8 @@ Gostaria antes de tudo, mencionar que eu não tinha experiências com o Python e
 
 A aplicação está hospedada na plataforma Heroku, para ter acesso <a href="https://jeitto.herokuapp.com/" target="_blank">clique aqui</a>.
 
+O banco de dados Mysql está hospedado na plataforma Clever Cloud.
+
 Para visualizar a documentação dos métodos da API <a href="https://documenter.getpostman.com/view/11794083/SzzobGC7" target="_blank">clique aqui</a>.
 
 Obrigado pela oportunidade.
@@ -81,14 +83,27 @@ Obrigado pela oportunidade.
 
     jeitto
     ├── app
-    │   ├── routes
-    │   ├── views
+    │   ├── __init__.py
     │   ├── models
+    │   ├── routes
     │   ├── templates
-    │   └── test
+    │   ├── test
+    │   └── views
     ├── config.py
+    ├── Dockerfile
     ├── Procfile
     ├── README.md
     ├── requirements.txt
     ├── run_dev.py
-    └── run.py
+    ├── run.py
+    └── start.sh
+
+- __app__:
+    - __init__: local onde são declarados todos os módulos a serem utilizados pela applicação.
+    - __models__: local onde são definidos os medelos de tabelas e suas relações com a orm.
+    - __routes__: local onde são definidas as rotas e as mesmas realizam as chamadas para as views.
+    - __templates__: local onde são encontrados os templates html utilizados pela aplicação
+    - __test__: local onde são definidos os teste unitários
+    - __views__: local onde são definidas todas as lógicas e procedimentos a serem feitos
+
+- __fora do app__: são encontradas as configurações das plataformas utilizadas, do sqlalchemy, dos modos de execução da aplicação e os requisitos do projeto
