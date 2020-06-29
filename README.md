@@ -1,6 +1,6 @@
 # Jeitto ( jeitto-backend-challenge-201901 )
 
-Gostaria antes de tudo, mencionar que eu não tinha experiências com o Python e a construção dessa API foi sem sombra de dúvidas muito proveitosa no sentido de aprendizado, pois praticamente a maioria das soluções que acabai por utilizar, eu nunca tinha utilizado antes.
+Gostaria antes de tudo, mencionar que eu não tinha experiências com o Python e a construção dessa API foi sem sombra de dúvidas muito proveitosa no sentido de aprendizado, pois praticamente a maioria das soluções que acabei por utilizar, eu nunca tinha utilizado antes.
 
 A aplicação está hospedada na plataforma Heroku, para ter acesso <a href="https://jeitto.herokuapp.com/" target="_blank">clique aqui</a>.
 
