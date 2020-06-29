@@ -51,25 +51,28 @@ Obrigado pela oportunidade.
 # Como Utilizar
 
 - Clonar este repositório
+
     ```git
     git clone https://github.com/DanielAkio/jeitto-backend-challenge-201901.git
     ```
 
 - Entrar no repositório
+
     ```git
     cd jeitto-backend-challenge-201901
     ```
 
 - Criar um arquivo .env, com as variáveis de ambiente MYSQL_URI e SECRET_KEY
+
     ```bash
     touch .env & echo MYSQL_URI="sua_mysql_uri" > .env & echo SECRET_KEY="sua_secret_key" >> .env
     ```
 
 - Utilizar o comando bash
+
     ```bash
     bash start.sh
     ```
-
 
 
 
